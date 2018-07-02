@@ -56,10 +56,13 @@ def main(domain,module_names,**kwargs):
         pageurls = get_page_urls(domain,sitemap)
     else:
         pageurls = [get_single_url(domain,page)]
-    for module in modules:
-        if module.name in module_names:
-            loaded_modules.append(module)
-            module_names.remove(module.name)
+    if module_names[0]="all":
+        loaded_modules=modules
+    else:
+        for module in modules:
+            if module.name in module_names:
+                loaded_modules.append(module)
+                module_names.remove(module.name)
     if len(module_names) > 0:
         print "\033[31mMissing modules" +str (module_names) +'\033[m'
     for module in loaded_modules:
