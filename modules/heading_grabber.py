@@ -3,7 +3,7 @@ from HTMLParser import HTMLParser
 class HeadingGrabber(HTMLParser):
     def __init__(self):
         HTMLParser.__init__(self)
-        runonce=False
+        self.runonce=False
         self.name="heading_grabber"
     def parse_page(self,page_data,page_url):
         if(page_url[-4:]==".pdf"):
