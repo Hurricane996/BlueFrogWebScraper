@@ -56,8 +56,9 @@ def main(domain,module_names,**kwargs):
         pageurls = get_page_urls(domain,sitemap)
     else:
         pageurls = [get_single_url(domain,page)]
-    if module_names[0]="all":
+    if module_names[0]=="all":
         loaded_modules=modules
+        module_names=[]
     else:
         for module in modules:
             if module.name in module_names:

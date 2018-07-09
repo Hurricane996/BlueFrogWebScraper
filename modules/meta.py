@@ -4,9 +4,10 @@ class Meta(HTMLParser):
     def __init__(self):
         HTMLParser.__init__(self)
         self.name="meta"
+        self.runonce=False
+        self.runonce=False
     def parse_page(self,page_url,page_data):
         self.description = ""
-        self.runonce=False
         self.keywords=[]
         self.title=""
         self.intitle=False
