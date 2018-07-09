@@ -38,7 +38,8 @@ def get_single_url(url,page):
     return url
 
 def get_data_from_page(pageurl):
-    return urllib.urlopen(pageurl).read()
+    req=urllib.Request(pageurl,headers={"User-Agent":"pybot"})
+    return urllib.urlopen(req).read()
 
 modules=load_modules()
 pageurls=[]

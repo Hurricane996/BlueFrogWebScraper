@@ -6,9 +6,9 @@ class ImageData(HTMLParser):
         self.runonce=False
         self.name="image_data"
         self.url=""
+    def parse_page(self,page_data,page_url):
         self.images=[]
         self.images_without_alt=[]
-    def parse_page(self,page_data,page_url):
         if(page_url[-4:]==".pdf"):
             return {}
         self.url=page_url
