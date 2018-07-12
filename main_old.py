@@ -6,6 +6,7 @@ import urllib2 as urllib
 import xml.etree.ElementTree as ET
 from importlib import import_module
 import argparse
+from utils import *
 
 def load_modules():
     module_names = ["modules."+f[:-3] for f in os.listdir("modules") if os.path.isfile(os.path.join("modules",f)) and f.split(".")[-1]=="py"];
@@ -19,33 +20,13 @@ def load_modules():
             print "\033[31mInvalid module "+module_name.split(".")[1]+"\033[m"  
     return modules
 
-def get_page_urls(url,sitemap_name="sitemap.xml"):
-    url=get_single_url(url,sitemap_name)
-    sitemap_data=urllib.urlopen(url).read()        
-    urls=[]
-    root=ET.fromstring(sitemap_data)
-    for sitemap in root.iter("{http://www.sitemaps.org/schemas/sitemap/0.9}sitemap"):
-        for sitemap in root.iter("{http://www.sitemaps.org/schemas/sitemap/0.9}loc"):
-            urls.append(get_page_urls(url))
-    for url in root.iter("{http://www.sitemaps.org/schemas/sitemap/0.9}loc"):
-        urls.append(url.text)
-    return urls
-
-def get_single_url(url,page):
-    if not "//" in url:
-        url="http://"+url
-    url=urlparse.urljoin(url,page)
-    return url
-
-def get_data_from_page(pageurl):
-    req=urllib.Request(pageurl,headers={"User-Agent":"pybot"})
-    return urllib.urlopen(req).read()
 
 modules=load_modules()
 pageurls=[]
 
 def main(domain,module_names,**kwargs):
-    out_data={}
+    pages_out_data={};
+    out_data={"pages":pages_out_data}
     loaded_modules=[]
     page=None
     sitemap="sitemap.xml"
@@ -75,18 +56,21 @@ def main(domain,module_names,**kwargs):
             except Exception:
                 out_data[module.name]=module.parse_page(get_data_from_page(get_single_url(domain,"/")),get_single_url(domain,"/"))
     for pageurl in pageurls:
-        loc = out_data
+        if "blog" in pageurl.lower():
+            continue
+        loc = pages_out_data
         print "Working on page "+pageurl
-        page_name=urlparse.urlparse(pageurl).path.split("/")[1:]
-        for i in page_name:
-            if not i in loc:
-                loc[i] = {}
-            loc=loc[i]
         try:
             page_data=get_data_from_page(pageurl)
         except UnicodeEncodeError:
             print "\033[31mNon-ascii character in page " + pageurl + ". Skipping...\033[m"
             continue 
+
+        page_name=urlparse.urlparse(pageurl).path.split("/")[1:]
+        for i in page_name:
+            if not i in loc:
+                loc[i] = {}
+            loc=loc[i]
         for module in loaded_modules:
             if(module.runonce):
                 continue
@@ -98,7 +82,8 @@ def main(domain,module_names,**kwargs):
                 loc[module.name]=module.parse_page(page_data,pageurl)
 
     with open("output.json","w") as f:
-        json.dump(out_data,f)
+       json.dump(out_data,f) 
+        
 
 if __name__=="__main__":
     parser = argparse.ArgumentParser(description="Scrape your website for various SEO-related information")
