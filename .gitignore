@@ -1,7 +1,7 @@
 #Output file
 output.json
 #Password file
-.passwd
+user_data
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
