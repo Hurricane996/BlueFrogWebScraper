@@ -2,13 +2,11 @@ from HTMLParser import HTMLParser
 import requests
 import urlparse
 
-class Links(HTMLParser):
+class Parser(HTMLParser):
     def __init__(self):
         HTMLParser.__init__(self)
-        self.runonce=False
         self.session=requests.Session()
         self.session.trust_env=False
-        self.name="links"
     def parse_page(self,page_data,page_url):
         self.intlinks={"count":0,"links":[]}
         self.extlinks={"count":0,"links":[]}
@@ -39,5 +37,6 @@ class Links(HTMLParser):
                 if response.status_code > 399:
                     self.deadlinks["count"]+=1
                     self.deadlinks["links"].append(src)
-module=Links()
-
+parser=Parser()
+def run(page_data,page_url):
+    parser.parse_page(page_data,page_url)

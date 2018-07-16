@@ -1,12 +1,9 @@
 from HTMLParser import HTMLParser
 
-class Meta(HTMLParser):
+class Parser(HTMLParser):
     def __init__(self):
         HTMLParser.__init__(self)
-        self.name="meta"
-        self.runonce=False
-        self.runonce=False
-    def parse_page(self,page_url,page_data):
+    def parse_page(self,page_data,page_url):
         self.description = ""
         self.keywords=[]
         self.title=""
@@ -42,4 +39,6 @@ class Meta(HTMLParser):
     def handle_data(self,data):
         if self.intitle:
             self.title=data
-module=Meta()
+parser=Parser()
+def run(page_data,page_url):
+    parser.parse_page(self,page_data,page_url)

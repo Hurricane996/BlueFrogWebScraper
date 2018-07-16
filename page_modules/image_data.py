@@ -1,6 +1,6 @@
 from HTMLParser import HTMLParser
 
-class ImageData(HTMLParser):
+class Parser(HTMLParser):
     def __init__(self):
         HTMLParser.__init__(self)
         self.runonce=False
@@ -36,4 +36,6 @@ class ImageData(HTMLParser):
                 self.images_without_alt.append({"src":src})
             else:
                 self.images.append({"src":src,"alt":alt})
-module=ImageData()
+parser=Parser()
+def run(self,page_data,page_url):
+    parser.parse_page(page_data,page_url)

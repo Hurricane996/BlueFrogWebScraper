@@ -1,6 +1,6 @@
 from HTMLParser import HTMLParser
 
-class HeadingGrabber(HTMLParser):
+class Parser(HTMLParser):
     def __init__(self):
         HTMLParser.__init__(self)
         self.runonce=False
@@ -70,5 +70,6 @@ class HeadingGrabber(HTMLParser):
             self.hcount["h5"]["text"].append(data)
         if self.inh6:
             self.hcount["h6"]["text"].append(data)
-
-module=HeadingGrabber()
+parser=Parser()
+def run(page_data,page_url):
+    parser.run(page_data,page_url)

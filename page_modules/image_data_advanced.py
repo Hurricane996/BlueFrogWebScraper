@@ -4,13 +4,11 @@ import urlparse
 from utils import sizeof_fmt
 
 
-class ImageDataAdvanced(HTMLParser):
+class Parser(HTMLParser):
     def __init__(self):
         HTMLParser.__init__(self)
-        self.runonce=False
         self.session=requests.Session()
         self.session.trust_env=False
-        self.name="image_data_advanced"
         self.images=[]
     def parse_page(self,page_data,page_url):
         self.images=[]
@@ -28,4 +26,7 @@ class ImageDataAdvanced(HTMLParser):
             req=self.session.get(urlparse.urljoin(self.url,src),headers={"Connection":"close"})
             length=int(req.headers["Content-Length"])
             self.images.append({"src":src,"size":sizeof_fmt(length)}) 
-module = ImageDataAdvanced()  
+parser=Parser()
+
+def run(page_data,page_url):
+    parser.parse_page(page_data,page_url)
