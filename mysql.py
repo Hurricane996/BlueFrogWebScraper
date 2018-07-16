@@ -75,3 +75,21 @@ def add_page(page_name,site_name,parent_page=None):
         sql = "INSERT INTO `pages` (`site_id`,`page_name`,`parent_page_id`) VALUES (%s,%s,%s)"
         cur.execute(sql,(site_id,page_name,parent_page_id))
         connection.commit() 
+
+def insert_site_data(website_name,module_name,data):
+    with connection.cursor() as cur:
+        sql="SELECT `id` FROM `sites` WHERE `name`=%s"
+        cur.execute(sql,website_name)
+        res=cur.fetchone()
+        if res==None:
+            add_website(website_name)
+            cur.execute(sql,website_name)
+            res=cur.fetchone()
+        site_id=res["id"]
+        sql="SELECT `id` FROM `modules` WHERE `name`=%s"
+        cur.execute(sql,module_name)
+        res=cur.fetchone()
+        module_id=res["id"]
+        sql="INSERT INTO `site_module_results` (`site_id`,`module_id`,`data`,`date_uploaded`) VALUES (%s,%s,%s,NOW())"
+        cur.execute(sql,(site_id,module_id,data))
+    
