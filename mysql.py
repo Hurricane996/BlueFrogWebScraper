@@ -61,4 +61,17 @@ def add_page(page_name,site_name,parent_page=None):
             cur.execute(sql,(site_name,))
             res=cur.fetchone()
         site_id=res["id"]
-    print "Website ID: " + str(site_id)
+        if(parent_page==None):
+            parent_page_id=None
+        else:
+            sql="SELECT `id` FROM `pages` WHERE `site_id`=%s AND `page_name`=%s"
+            cur.execute(sql,(site_id,parent_page))
+            res=cur.fetchone()
+            if res == None:
+                add_page(parent_page,site_name)
+                cur.execute(sql,(site_id,parent_page))
+                res=cur.fetchone()
+            parent_page_id=res["id"]
+        sql = "INSERT INTO `pages` (`site_id`,`page_name`,`parent_page_id`) VALUES (%s,%s,%s)"
+        cur.execute(sql,(site_id,page_name,parent_page_id))
+        connection.commit() 
