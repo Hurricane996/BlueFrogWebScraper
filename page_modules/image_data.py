@@ -1,4 +1,5 @@
 from HTMLParser import HTMLParser
+import utils
 
 class Parser(HTMLParser):
     def __init__(self):
@@ -6,6 +7,8 @@ class Parser(HTMLParser):
         self.runonce=False
         self.name="image_data"
         self.url=""
+        self.session=requests.Session()
+        self.session.trust_env=False
     def parse_page(self,page_data,page_url):
         self.images=[]
         self.images_without_alt=[]
@@ -32,10 +35,12 @@ class Parser(HTMLParser):
                     src=attr[1]
                 if attr[0]=="alt":
                     alt=attr[1]
+            req=self.session.get(urlparse.urljoin(self.url,src),headers={"Connection":"close"})
+            length=int(req.headers["Content-Length"])
             if alt=="":
-                self.images_without_alt.append({"src":src})
+                self.images_without_alt.append({"src":src,"size":utils.sizeof_fmt(length)})
             else:
-                self.images.append({"src":src,"alt":alt})
+                self.images.append({"src":src,"alt":alt,"size":utils.sizeof_fmt(length)})
 parser=Parser()
 def run(self,page_data,page_url):
     parser.parse_page(page_data,page_url)
