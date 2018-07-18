@@ -42,6 +42,16 @@ def connect(connection_data):
 def initialize(file="user_data"):
     connect(load_connection_data(file))
 ###########################DATABASE MODIFYING METHODS###########################
+def get_website(site_name):
+    try:
+        with connection.cursor() as cur:
+            sql = "SELECT `id` FROM `sites` WHERE `name`=%s"
+            cur.execute(sql,(site_name,)
+            res=cur.fetch_one()
+            if not res:
+                add_website(site_name)
+                return get_website(site_name)
+            return res["id"]
 def add_website(site_name):
     try:
         with connection.cursor() as cur:
@@ -52,45 +62,62 @@ def add_website(site_name):
     else:
         connection.commit()
 
+
+
+
+
+def get_page(site_name,page_name):
+    with connection.cursor() as cur:
+        site_id=get_website(site_name)
+        sql="SELECT `id` FROM `pages` WHERE `site_id`=%s AND `page_name`=%s"
+        cur.execute(sql,(site_id,page_name)
+        res=cur.fetchone()
+        if not res:
+            add_page(page_name,site_name)
+            return get_page(site_name,page_name)
+        return res["id"]
 def add_page(page_name,site_name,parent_page=None):
     with connection.cursor() as cur:
-        sql="SELECT `id` FROM `sites` WHERE `name`=%s"
-        cur.execute(sql,(site_name,))
-        res=cur.fetchone()
-        if res == None:
-            add_website(site_name)
-            cur.execute(sql,(site_name,))
-            res=cur.fetchone()
-        site_id=res["id"]
+        site_id=get_website(site_name)    
         if(parent_page==None):
             parent_page_id=None
         else:
-            sql="SELECT `id` FROM `pages` WHERE `site_id`=%s AND `page_name`=%s"
-            cur.execute(sql,(site_id,parent_page))
-            res=cur.fetchone()
-            if res == None:
-                add_page(parent_page,site_name)
-                cur.execute(sql,(site_id,parent_page))
-                res=cur.fetchone()
-            parent_page_id=res["id"]
+            parent_page_id=get_page(site_name,parent_page)
         sql = "INSERT INTO `pages` (`site_id`,`page_name`,`parent_page_id`) VALUES (%s,%s,%s)"
         cur.execute(sql,(site_id,page_name,parent_page_id))
         connection.commit() 
 
-def insert_site_data(website_name,module_name,data):
+
+
+
+
+def get_module(module_name):
+    sql="SELECT `id` FROM `modules` WHERE `name`=%s"
+    cur.execute(sql,module_name)
+    res=cur.fetchone()
+    module_id=res["id"]
+
+
+
+
+
+def insert_site_data(site_name,module_name,data):
     with connection.cursor() as cur:
         sql="SELECT `id` FROM `sites` WHERE `name`=%s"
-        cur.execute(sql,website_name)
-        res=cur.fetchone()
-        if res==None:
-            add_website(website_name)
-            cur.execute(sql,website_name)
-            res=cur.fetchone()
-        site_id=res["id"]
-        sql="SELECT `id` FROM `modules` WHERE `name`=%s"
-        cur.execute(sql,module_name)
-        res=cur.fetchone()
-        module_id=res["id"]
-        sql="INSERT INTO `site_module_results` (`site_id`,`module_id`,`data`,`date_uploaded`) VALUES (%s,%s,%s,NOW())"
+        site_id=get_website(site_name)
+        module_id=get_module(module_name)
+        sql="INSERT INTO `site_module_results` (`site_id`,`module_id`,`data`,`date_updated`) VALUES (%s,%s,%s,NOW())"
         cur.execute(sql,(site_id,module_id,data))
-    
+        connection.commit()
+
+
+
+
+
+def insert_page_data(site_name,page_name,module_name,data):
+    with connection.cursor() as cur:
+        page_id=get_page(site_name,page_name) 
+        module_id=get_module(id)
+        sql="INSERT INTO `site_module_results` (`page_id`,`module_id`,`data`,`date_updated`) VALUES (%s,%s,%s,NOW())"
+        cur.execute(sql,(page_id,module_id,data))
+        connection.commit()
