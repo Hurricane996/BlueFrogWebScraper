@@ -1,5 +1,6 @@
 from HTMLParser import HTMLParser
 import utils
+import requests
 
 class Parser(HTMLParser):
     def __init__(self):

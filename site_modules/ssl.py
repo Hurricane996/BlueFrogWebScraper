@@ -17,4 +17,4 @@ def run(self,page_url):
             return {"ssl":False,"ssl_root":False}
     except requests.exceptions.ConnectionError as e:
         traceback.print_exc()
-            return {"ssl":False,"ssl_root":False}
+        return {"ssl":False,"ssl_root":False}

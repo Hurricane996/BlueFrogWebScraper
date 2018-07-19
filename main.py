@@ -1,6 +1,33 @@
 #!/usr/bin/python
 
 import argparse
+import sys,os
+import pprint
+
+
+from page_modules import heading_grabber
+from page_modules import image_data
+from page_modules import links
+from page_modules import meta
+
+from site_modules import mobilefriendly
+from site_modules import page_speed
+from site_modules import robots
+from site_modules import ssl
+
+page_modules=[
+    heading_grabber,
+    image_data,
+    links,
+    meta
+]
+
+site_modules=[
+    mobilefriendly,
+    page_speed,
+    robots,
+    ssl 
+]
 
 parser = argparse.ArgumentParser(description="tool that gets seo-related information by crawling website")
 
@@ -12,4 +39,15 @@ group.add_argument("-s","--sitemap",help="specify a custom sitemap location",def
 
 args=parser.parse_args()
 
-print args.modules
+pprint.PrettyPrinter().pprint(sys.modules)
+
+def load_modules(module_names,loadable_modules):
+    loaded_modules=[]
+    for module in loadable_modules:
+        if module.__name__.split(".")[1] in module_names:
+            loaded_modules.append(module)
+    return loaded_modules
+
+print load_modules(args.modules,page_modules)
+print load_modules(args.modules,site_modules)
+
