@@ -2,7 +2,7 @@ import requests
 import urllib2 as urllib
 import traceback
 
-def run(self,page_url):
+def run(page_url):
     try:
         if page_url[:7]=="http://":
             page_url="https://"+page_url[7:]
@@ -18,3 +18,4 @@ def run(self,page_url):
     except requests.exceptions.ConnectionError as e:
         traceback.print_exc()
         return {"ssl":False,"ssl_root":False}
+name="ssl"

@@ -41,4 +41,5 @@ class Parser(HTMLParser):
             self.title=data
 parser=Parser()
 def run(page_data,page_url):
-    parser.parse_page(self,page_data,page_url)
+    return parser.parse_page(page_data,page_url)
+name="meta"

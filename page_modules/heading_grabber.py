@@ -72,4 +72,5 @@ class Parser(HTMLParser):
             self.hcount["h6"]["text"].append(data)
 parser=Parser()
 def run(page_data,page_url):
-    parser.run(page_data,page_url)
+    return parser.parse_page(page_data,page_url)
+name="heading_grabber"

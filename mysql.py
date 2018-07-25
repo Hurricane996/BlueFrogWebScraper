@@ -43,15 +43,14 @@ def initialize(file="user_data"):
     connect(load_connection_data(file))
 ###########################DATABASE MODIFYING METHODS###########################
 def get_website(site_name):
-    try:
-        with connection.cursor() as cur:
-            sql = "SELECT `id` FROM `sites` WHERE `name`=%s"
-            cur.execute(sql,(site_name,)
-            res=cur.fetch_one()
-            if not res:
-                add_website(site_name)
-                return get_website(site_name)
-            return res["id"]
+    with connection.cursor() as cur:
+        sql = "SELECT `id` FROM `sites` WHERE `name`=%s"
+        cur.execute(sql,(site_name,))
+        res=cur.fetchone()
+        if not res:
+            add_website(site_name)
+            return get_website(site_name)
+        return res["id"]
 def add_website(site_name):
     try:
         with connection.cursor() as cur:
@@ -70,7 +69,7 @@ def get_page(site_name,page_name):
     with connection.cursor() as cur:
         site_id=get_website(site_name)
         sql="SELECT `id` FROM `pages` WHERE `site_id`=%s AND `page_name`=%s"
-        cur.execute(sql,(site_id,page_name)
+        cur.execute(sql,(site_id,page_name))
         res=cur.fetchone()
         if not res:
             add_page(page_name,site_name)
@@ -86,29 +85,38 @@ def add_page(page_name,site_name,parent_page=None):
         sql = "INSERT INTO `pages` (`site_id`,`page_name`,`parent_page_id`) VALUES (%s,%s,%s)"
         cur.execute(sql,(site_id,page_name,parent_page_id))
         connection.commit() 
-
+def page_exists(site_name,page_name):
+    with connection.cursor() as cur:
+        site_id=get_website(site_name)
+        sql="SELECT `id` FROM `pages` WHERE `site_id`=%s AND `page_name`=%s"
+        cur.execute(sql,(site_id,page_name))
+        res=cur.fetchone()
+        return res != None
 
 
 
 
 def get_module(module_name):
-    sql="SELECT `id` FROM `modules` WHERE `name`=%s"
-    cur.execute(sql,module_name)
-    res=cur.fetchone()
-    module_id=res["id"]
+    with connection.cursor() as cur:
+        sql="SELECT `id` FROM `modules` WHERE `name`=%s"
+        cur.execute(sql,module_name)
+        res=cur.fetchone()
+        return res["id"]
 
 
 
 
 
 def insert_site_data(site_name,module_name,data):
-    with connection.cursor() as cur:
-        sql="SELECT `id` FROM `sites` WHERE `name`=%s"
-        site_id=get_website(site_name)
-        module_id=get_module(module_name)
-        sql="INSERT INTO `site_module_results` (`site_id`,`module_id`,`data`,`date_updated`) VALUES (%s,%s,%s,NOW())"
-        cur.execute(sql,(site_id,module_id,data))
-        connection.commit()
+    try:
+        with connection.cursor() as cur:
+            sql="SELECT `id` FROM `sites` WHERE `name`=%s"
+            site_id=get_website(site_name)
+            module_id=get_module(module_name)
+            sql="INSERT INTO `site_module_results` (`site_id`,`module_id`,`data`,`date_updated`) VALUES (%s,%s,%s,NOW())"
+            cur.execute(sql,(site_id,module_id,data))
+            connection.commit()
+    except Exception as e:print e
 
 
 
@@ -117,7 +125,7 @@ def insert_site_data(site_name,module_name,data):
 def insert_page_data(site_name,page_name,module_name,data):
     with connection.cursor() as cur:
         page_id=get_page(site_name,page_name) 
-        module_id=get_module(id)
-        sql="INSERT INTO `site_module_results` (`page_id`,`module_id`,`data`,`date_updated`) VALUES (%s,%s,%s,NOW())"
+        module_id=get_module(module_name)
+        sql="INSERT INTO `page_module_results` (`page_id`,`module_id`,`data`,`date_updated`) VALUES (%s,%s,%s,NOW())"
         cur.execute(sql,(page_id,module_id,data))
         connection.commit()

@@ -39,4 +39,5 @@ class Parser(HTMLParser):
                     self.deadlinks["links"].append(src)
 parser=Parser()
 def run(page_data,page_url):
-    parser.parse_page(page_data,page_url)
+    return parser.parse_page(page_data,page_url)
+name="links"
