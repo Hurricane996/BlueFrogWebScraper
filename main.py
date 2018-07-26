@@ -34,6 +34,9 @@ site_modules=[
     ssl 
 ]
 
+def open_url(url):
+    req=urllib2.Request(url,headers={"User-Agent":"Mozilla/5.0"})
+    return urllib2.urlopen(req).read()
 
 
 def run_site_modules(domain,site_modules):
@@ -42,10 +45,13 @@ def run_site_modules(domain,site_modules):
         data=json.dumps(module.run(domain))
         mysql.insert_site_data(domain,module.name,data)
 def run_page_modules(domain,page_url,page_data,page_modules):
+    if page_url[-1]=="/":
+        page_url=page_url[:-1]
     page_name=page_url.split("/")[-1]
+    print page_name
     for module in page_modules:
         print module.__name__
-        data=json.dumps(module.run(page_url,page_data))
+        data=json.dumps(module.run(page_data,page_url))
         mysql.insert_page_data(domain,page_name,module.name,data)
 
 
@@ -60,15 +66,13 @@ def get_pages(site,sitemap):
     urls=[]
 
     url=urlparse.urljoin(site,sitemap)
-    req=urllib2.Request(url)
-    req.add_header('User-Agent','Mozilla/5.0')
-    data=urllib2.urlopen(req).read()
-
+    data=open_url(url)
+    
     root= ET.fromstring(data)     
 
-    for sitemap in root.iter("{http://www.sitemaps.org/schemas/sitemap/0.9}sitemap"):
+    """for sitemap in root.iter("{http://www.sitemaps.org/schemas/sitemap/0.9}sitemap"):
         for sitemap in root.iter("{http://www.sitemaps.org/schemas/sitemap/0.9}loc"):
-            urls.append(get_pages(url))
+            urls.append(get_pages(site,urlparse.urlparse(url).path))"""
     for url in root.iter("{http://www.sitemaps.org/schemas/sitemap/0.9}loc"):
         if not "blog" in url.text.lower():
             urls.append(url.text)
@@ -77,6 +81,7 @@ def get_pages(site,sitemap):
 def build_page_structure_in_db(site_name,urls):
     print sorted(urls,key=lambda u:len(urlparse.urlparse(u).path.split("/")))
     for page_url in urls:
+        print "Adding page "+page_url+" to db"
         page_name=page_url.split("/")[-1]
         page_path=urlparse.urlparse(page_url).path.split("/")
         if not mysql.page_exists(site_name,page_path[0]):
@@ -94,6 +99,7 @@ def main(args):
     mysql.initialize()
     
     print args.modules
+     
     if args.modules[0]=="all":
         loaded_site_modules=site_modules
         loaded_page_modules=page_modules
@@ -107,7 +113,8 @@ def main(args):
     run_site_modules(args.site,loaded_site_modules)
     
     for page in pages:
-        page_data=urllib2.urlopen(page).read()
+        print "Working on page" + page
+        page_data=open_url(page)
         run_page_modules(args.site,page,page_data,loaded_page_modules)
         
 
@@ -115,7 +122,7 @@ if __name__=='__main__':
     parser = argparse.ArgumentParser(description="tool that gets seo-related information by crawling website")
 
     parser.add_argument("site",help="the website you want to run the scraper on")
-    parser.add_argument("modules",help="the modules you wish to load, or all for all of them",default="all",nargs="*");
+    parser.add_argument("modules",help="the modules you wish to load, or all for all of them",default=["all"],nargs="*");
     group = parser.add_mutually_exclusive_group()
     group.add_argument("-p","--page",help="run the scraper on a single page instead of an entire site")
     group.add_argument("-s","--sitemap",help="specify a custom sitemap location",default="sitemap.xml")

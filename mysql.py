@@ -64,7 +64,6 @@ def add_website(site_name):
 
 
 
-
 def get_page(site_name,page_name):
     with connection.cursor() as cur:
         site_id=get_website(site_name)

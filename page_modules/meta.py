@@ -1,4 +1,4 @@
-from HTMLParser import HTMLParser
+from HTMLParser import HTMLParser;
 
 class Parser(HTMLParser):
     def __init__(self):
@@ -9,15 +9,15 @@ class Parser(HTMLParser):
         self.title=""
         self.intitle=False
         self.feed(page_data.decode("utf8","ignore"))
-        return {"description":self.description,"keywords":self.keywords,"title":self.title}
+        return {"description":self.description,"keywords":self.keywords,"title":self.title};
     def handle_starttag(self,tag,attrs):
         if tag=="meta":
-            self.handle_startendtag(self,tag,attrs)
+            self.handle_startendtag(tag,attrs)
         if tag=="title":
             self.intitle=True
 
     def handle_startendtag(self,tag,attrs):
-        if tag=="meta":
+        """if tag=="meta":
             name=""
             content=""
             for attr in attrs:
@@ -35,7 +35,7 @@ class Parser(HTMLParser):
                 keywords.extend(content.split(" "))
     def handle_endtag(self,tag):
         if tag=="title":
-            self.intitle=false
+            self.intitle=False
     def handle_data(self,data):
         if self.intitle:
             self.title=data

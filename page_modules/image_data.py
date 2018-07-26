@@ -1,6 +1,7 @@
 from HTMLParser import HTMLParser
 import utils
 import requests
+import urlparse
 
 class Parser(HTMLParser):
     def __init__(self):
@@ -37,7 +38,10 @@ class Parser(HTMLParser):
                 if attr[0]=="alt":
                     alt=attr[1]
             req=self.session.get(urlparse.urljoin(self.url,src),headers={"Connection":"close"})
-            length=int(req.headers["Content-Length"])
+            try:
+                length=int(req.headers["Content-Length"])
+            except KeyError:
+                length=-1
             if alt=="":
                 self.images_without_alt.append({"src":src,"size":utils.sizeof_fmt(length)})
             else:
