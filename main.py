@@ -48,7 +48,6 @@ def run_page_modules(domain,page_url,page_data,page_modules):
     if page_url[-1]=="/":
         page_url=page_url[:-1]
     page_name=page_url.split("/")[-1]
-    print page_name
     for module in page_modules:
         print module.__name__
         data=json.dumps(module.run(page_data,page_url))
@@ -82,7 +81,7 @@ def build_page_structure_in_db(site_name,urls):
     print sorted(urls,key=lambda u:len(urlparse.urlparse(u).path.split("/")))
     for page_url in urls:
         print "Adding page "+page_url+" to db"
-        page_name=page_url.split("/")[-1]
+        page_name=urlparse.urlparse(page_url).path.split("/")[-1]
         page_path=urlparse.urlparse(page_url).path.split("/")
         if not mysql.page_exists(site_name,page_path[0]):
             mysql.add_page(page_path[0],site_name)
@@ -107,13 +106,19 @@ def main(args):
         loaded_site_modules=load_modules(args.modules,site_modules)
         loaded_page_modules=load_modules(args.modules,page_modules)
 
-    pages=get_pages(args.site,args.sitemap)
-    build_page_structure_in_db(args.site,pages)
+    if not args.page:
+        pages=get_pages(args.site,args.sitemap)
+        build_page_structure_in_db(args.site,pages)
 
     run_site_modules(args.site,loaded_site_modules)
-    
-    for page in pages:
-        print "Working on page" + page
+     
+    if not args.page:
+        for page in pages:
+            print "Working on page " + page
+            page_data=open_url(page)
+            run_page_modules(args.site,page,page_data,loaded_page_modules)
+    else:
+        page=urlparse.urljoin(args.site,args.page)
         page_data=open_url(page)
         run_page_modules(args.site,page,page_data,loaded_page_modules)
         

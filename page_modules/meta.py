@@ -17,22 +17,19 @@ class Parser(HTMLParser):
             self.intitle=True
 
     def handle_startendtag(self,tag,attrs):
-        """if tag=="meta":
+        if tag=="meta":
             name=""
             content=""
             for attr in attrs:
-                if attr[0]=="property":
-                    name=attr[1][3:]
-                if attr[0]=="name":
+                if attr[0]=="name" or attr[0]=="property":
                     name=attr[1]
                 if attr[0]=="content":
                     content=attr[1]
-            name=""
-            content=""
             if name=="description":
                 self.description=content
             if name=="keywords":
-                keywords.extend(content.split(" "))
+                print content.split(" ")
+                self.keywords.extend(content.split(" "))
     def handle_endtag(self,tag):
         if tag=="title":
             self.intitle=False
@@ -43,3 +40,4 @@ parser=Parser()
 def run(page_data,page_url):
     return parser.parse_page(page_data,page_url)
 name="meta"
+
