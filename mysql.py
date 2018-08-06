@@ -123,8 +123,9 @@ def insert_site_data(site_name,module_name,data):
 
 def insert_page_data(site_name,page_name,module_name,data):
     with connection.cursor() as cur:
+        site_id=get_website(site_name)
         page_id=get_page(site_name,page_name) 
         module_id=get_module(module_name)
-        sql="INSERT INTO `page_module_results` (`page_id`,`module_id`,`data`,`date_updated`) VALUES (%s,%s,%s,NOW())"
-        cur.execute(sql,(page_id,module_id,data))
+        sql="INSERT INTO `page_module_results` (`page_id`,`site_id`,`module_id`,`data`,`date_updated`) VALUES (%s,%s,%s,%s,NOW())"
+        cur.execute(sql,(page_id,site_id,module_id,data))
         connection.commit()
