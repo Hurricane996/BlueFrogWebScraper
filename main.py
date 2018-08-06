@@ -73,8 +73,7 @@ def get_pages(site,sitemap):
         for sitemap in root.iter("{http://www.sitemaps.org/schemas/sitemap/0.9}loc"):
             urls.append(get_pages(site,urlparse.urlparse(url).path))"""
     for url in root.iter("{http://www.sitemaps.org/schemas/sitemap/0.9}loc"):
-        if not "blog" in url.text.lower():
-            urls.append(url.text)
+        urls.append(url.text)
     return urls
 
 def build_page_structure_in_db(site_name,urls):
