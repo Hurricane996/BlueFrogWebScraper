@@ -61,7 +61,7 @@ def load_modules(module_names,loadable_modules):
             loaded_modules.append(module)
     return loaded_modules
 
-def get_pages(site,sitemap):
+def get_pages(site,sitemap,max_urls):
     urls=[]
 
     url=urlparse.urljoin(site,sitemap)
@@ -74,6 +74,7 @@ def get_pages(site,sitemap):
             urls.append(get_pages(site,urlparse.urlparse(url).path))"""
     for url in root.iter("{http://www.sitemaps.org/schemas/sitemap/0.9}loc"):
         urls.append(url.text)
+    urls=urls[:max_urls]
     return urls
 
 def build_page_structure_in_db(site_name,urls):
@@ -106,7 +107,7 @@ def main(args):
         loaded_page_modules=load_modules(args.modules,page_modules)
 
     if not args.page:
-        pages=get_pages(args.site,args.sitemap)
+        pages=get_pages(args.site,args.sitemap,5)
         build_page_structure_in_db(args.site,pages)
 
     run_site_modules(args.site,loaded_site_modules)
