@@ -3,6 +3,8 @@
 import argparse
 import sys,os
 
+import re
+
 import mysql
 import json
 import xml.etree.ElementTree as ET
@@ -19,6 +21,8 @@ from site_modules import mobile_friendly
 from site_modules import page_speed
 from site_modules import robots
 from site_modules import ssl
+
+FAILURE_REGEX="a^"
 
 page_modules=[
     heading_grabber,
@@ -61,8 +65,10 @@ def load_modules(module_names,loadable_modules):
             loaded_modules.append(module)
     return loaded_modules
 
-def get_pages(site,sitemap,max_urls):
+def get_pages(site,sitemap,regex,max_urls):
     urls=[]
+
+    print regex
 
     url=urlparse.urljoin(site,sitemap)
     data=open_url(url)
@@ -73,7 +79,8 @@ def get_pages(site,sitemap,max_urls):
         for sitemap in root.iter("{http://www.sitemaps.org/schemas/sitemap/0.9}loc"):
             urls.append(get_pages(site,urlparse.urlparse(url).path))"""
     for url in root.iter("{http://www.sitemaps.org/schemas/sitemap/0.9}loc"):
-        urls.append(url.text)
+        if url.text and (re.search(regex,url.text)==None):
+            urls.append(url.text)
     urls=urls[:max_urls]
     return urls
 
@@ -107,7 +114,7 @@ def main(args):
         loaded_page_modules=load_modules(args.modules,page_modules)
 
     if not args.page:
-        pages=get_pages(args.site,args.sitemap,5)
+        pages=get_pages(args.site,args.sitemap,args.exclude_regex,55)
         build_page_structure_in_db(args.site,pages)
 
     run_site_modules(args.site,loaded_site_modules)
@@ -128,6 +135,7 @@ if __name__=='__main__':
 
     parser.add_argument("site",help="the website you want to run the scraper on")
     parser.add_argument("modules",help="the modules you wish to load, or all for all of them",default=["all"],nargs="*");
+    parser.add_argument("-r","--exclude-regex",help="Specify a regex that, when any part of it is matched, excludes that URL",default=FAILURE_REGEX)
     group = parser.add_mutually_exclusive_group()
     group.add_argument("-p","--page",help="run the scraper on a single page instead of an entire site")
     group.add_argument("-s","--sitemap",help="specify a custom sitemap location",default="sitemap.xml")
