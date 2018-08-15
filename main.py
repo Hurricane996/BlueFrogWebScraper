@@ -5,7 +5,7 @@ import sys,os
 
 import re
 
-#import mysql
+import mysql
 
 import json
 import xml.etree.ElementTree as ET
