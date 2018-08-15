@@ -5,8 +5,6 @@ import sys,os
 
 import re
 
-import mysql
-
 import json
 import xml.etree.ElementTree as ET
 
@@ -47,16 +45,14 @@ def open_url(url):
 def run_site_modules(domain,site_modules):
     for module in site_modules:
         print module.__name__
-        data=json.dumps(module.run(domain))
-        mysql.insert_site_data(domain,module.name,data)
+        return module.run(domain)
 def run_page_modules(domain,page_url,page_data,page_modules):
     if page_url[-1]=="/":
         page_url=page_url[:-1]
     page_name=page_url.split("/")[-1]
     for module in page_modules:
         print module.__name__
-        data=json.dumps(module.run(page_data,page_url))
-        mysql.insert_page_data(domain,page_name,module.name,data)
+        return module.run(page_data,page_url)
 
 
 def load_modules(module_names,loadable_modules):
@@ -85,23 +81,6 @@ def get_pages(site,sitemap,regex,max_urls):
     urls=urls[:max_urls]
     return urls
 
-def build_page_structure_in_db(site_name,urls):
-    print sorted(urls,key=lambda u:len(urlparse.urlparse(u).path.split("/")))
-    for page_url in urls:
-        print "Adding page "+page_url+" to db"
-        page_name=urlparse.urlparse(page_url).path.split("/")[-1]
-        page_path=urlparse.urlparse(page_url).path.split("/")
-        if not mysql.page_exists(site_name,page_path[0]):
-            mysql.add_page(page_path[0],site_name)
-        if len(page_path)>1:
-            n=0
-        
-            for i in page_path[1:]:
-                n+=1
-                if not mysql.page_exists(site_name,page_path[n]):
-                    mysql.add_page(page_path[n],site_name,page_path[n-1])
-    
-    
 def main(args):
     mysql.initialize()
     
@@ -115,8 +94,7 @@ def main(args):
         loaded_page_modules=load_modules(args.modules,page_modules)
 
     if not args.page:
-        pages=get_pages(args.site,args.sitemap,args.exclude_regex,55)
-        build_page_structure_in_db(args.site,pages)
+        pages=get_pages(args.site,args.sitemap,args.exclude_regex,50)
 
     run_site_modules(args.site,loaded_site_modules)
      
