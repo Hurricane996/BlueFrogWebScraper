@@ -43,17 +43,18 @@ def open_url(url):
 
 
 def run_site_modules(domain,site_modules):
+    obj={}
     for module in site_modules:
-        print module.__name__
-        return module.run(domain)
+        obj[module.__name__] = module.run(domain)
+    return obj
 def run_page_modules(domain,page_url,page_data,page_modules):
+    obj={}
     if page_url[-1]=="/":
         page_url=page_url[:-1]
     page_name=page_url.split("/")[-1]
     for module in page_modules:
-        print module.__name__
-        return module.run(page_data,page_url)
-
+        obj[module.__name__]=module.run(page_data,page_url)
+    return obj
 
 def load_modules(module_names,loadable_modules):
     loaded_modules=[];
@@ -94,7 +95,7 @@ def build_page_structure(site_name,urls,obj):
 def main(args):
     
     print args.modules
-     
+    out = {} 
     if args.modules[0]=="all":
         loaded_site_modules=site_modules
         loaded_page_modules=page_modules
@@ -105,10 +106,11 @@ def main(args):
     if not args.page:
         pages=get_pages(args.site,args.sitemap,args.exclude_regex,50)
 
-    run_site_modules(args.site,loaded_site_modules)
-     
+    out["site_modules"] = run_site_modules(args.site,loaded_site_modules)
+  
     if not args.page:
         for page in pages:
+            e=out
             page_path=urlparse.urlparse(url).path.split[path]
             for path_component in path:
                 if not path_component in e.keys():
@@ -122,7 +124,7 @@ def main(args):
         page=urlparse.urljoin(args.site,args.page)
         page_data=open_url(page)
         run_page_modules(args.site,page,page_data,loaded_page_modules)
-        
+    print json.dumps(out) 
 
 if __name__=='__main__':
     parser = argparse.ArgumentParser(description="tool that gets seo-related information by crawling website")
