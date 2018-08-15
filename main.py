@@ -80,9 +80,18 @@ def get_pages(site,sitemap,regex,max_urls):
             urls.append(url.text)
     urls=urls[:max_urls]
     return urls
+def build_page_structure(site_name,urls,obj):
+    e=obj
+    urls = sorted(urls,key=lambda u:len(urlparse.urlparse(u).path.split("/")))
+    for page_url in urls:
+        page_path=urlparse.urlparse(url).path.split[path]
+        for path_component in path:
+            if not path_component in e.keys():
+                e[path_component] = {}
+            e=e[path_component]
+            
 
 def main(args):
-    mysql.initialize()
     
     print args.modules
      
@@ -100,9 +109,15 @@ def main(args):
      
     if not args.page:
         for page in pages:
+            page_path=urlparse.urlparse(url).path.split[path]
+            for path_component in path:
+                if not path_component in e.keys():
+                    e[path_component] = {}
+                e=e[path_component]
+
             print "Working on page " + page
             page_data=open_url(page)
-            run_page_modules(args.site,page,page_data,loaded_page_modules)
+            e["page_module_data"] = run_page_modules(args.site,page,page_data,loaded_page_modules)
     else:
         page=urlparse.urljoin(args.site,args.page)
         page_data=open_url(page)
