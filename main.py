@@ -102,8 +102,9 @@ def main(args):
     else:
         loaded_site_modules=load_modules(args.modules,site_modules)
         loaded_page_modules=load_modules(args.modules,page_modules)
-    args.site=urlparse.urljoin("http://",args.site)
-
+    if not urlparse.urlparse(args.site).scheme:
+        args.site = "http://"+args.site
+    
     if not args.page:
         pages=get_pages(args.site,args.sitemap,args.exclude_regex,10)
 
@@ -124,7 +125,7 @@ def main(args):
     else:
         page=urlparse.urljoin(args.site,args.page)
         page_data=open_url(page)
-        run_page_modules(args.site,page,page_data,loaded_page_modules)
+        run_page_modules(site,page,page_data,loaded_page_modules)
     with open("output.json","wb") as ofile:
         json.dump(out,ofile)
 
