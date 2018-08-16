@@ -104,15 +104,15 @@ def main(args):
         loaded_page_modules=load_modules(args.modules,page_modules)
 
     if not args.page:
-        pages=get_pages(args.site,args.sitemap,args.exclude_regex,50)
+        pages=get_pages(args.site,args.sitemap,args.exclude_regex,10)
 
     out["site_modules"] = run_site_modules(args.site,loaded_site_modules)
   
     if not args.page:
         for page in pages:
             e=out
-            page_path=urlparse.urlparse(url).path.split[path]
-            for path_component in path:
+            page_path=urlparse.urlparse(page).path.split("/")
+            for path_component in page_path:
                 if not path_component in e.keys():
                     e[path_component] = {}
                 e=e[path_component]
@@ -124,7 +124,8 @@ def main(args):
         page=urlparse.urljoin(args.site,args.page)
         page_data=open_url(page)
         run_page_modules(args.site,page,page_data,loaded_page_modules)
-    print json.dumps(out) 
+    with open("output.json","wb") as ofile:
+        json.dump(out,ofile)
 
 if __name__=='__main__':
     parser = argparse.ArgumentParser(description="tool that gets seo-related information by crawling website")
