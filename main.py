@@ -102,11 +102,11 @@ def main(args):
     else:
         loaded_site_modules=load_modules(args.modules,site_modules)
         loaded_page_modules=load_modules(args.modules,page_modules)
+    args.site=urlparse.urljoin("http://",args.site)
 
     if not args.page:
         pages=get_pages(args.site,args.sitemap,args.exclude_regex,10)
 
-    args.site=urlparse.urljoin("http://",args.site)
     out["site_modules"] = run_site_modules(args.site,loaded_site_modules)
   
     if not args.page:
