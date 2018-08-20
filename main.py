@@ -90,10 +90,8 @@ def build_page_structure(site_name,urls,obj):
             if not path_component in e.keys():
                 e[path_component] = {}
             e=e[path_component]
-            
 
 def main(args):
-    
     print args.modules
     out = {} 
     if args.modules[0]=="all":
@@ -126,7 +124,7 @@ def main(args):
         page=urlparse.urljoin(args.site,args.page)
         page_data=open_url(page)
         run_page_modules(site,page,page_data,loaded_page_modules)
-    with open(urlparse.urlparse(url).netloc+".json","wb") as ofile:
+    with open("output/"+urlparse.urlparse(url).netloc+".json","wb") as ofile:
         json.dump(out,ofile)
 
 if __name__=='__main__':
