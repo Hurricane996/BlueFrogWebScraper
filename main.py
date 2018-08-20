@@ -126,7 +126,7 @@ def main(args):
         page=urlparse.urljoin(args.site,args.page)
         page_data=open_url(page)
         run_page_modules(site,page,page_data,loaded_page_modules)
-    with open("output.json","wb") as ofile:
+    with open(urlparse.urlparse(url).netloc+".json","wb") as ofile:
         json.dump(out,ofile)
 
 if __name__=='__main__':
