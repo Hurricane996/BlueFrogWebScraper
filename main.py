@@ -45,6 +45,7 @@ def open_url(url):
 def run_site_modules(domain,site_modules):
     obj={}
     for module in site_modules:
+        print module.__name__
         obj[module.__name__] = module.run(domain)
     return obj
 def run_page_modules(domain,page_url,page_data,page_modules):
@@ -53,6 +54,7 @@ def run_page_modules(domain,page_url,page_data,page_modules):
         page_url=page_url[:-1]
     page_name=page_url.split("/")[-1]
     for module in page_modules:
+        print module.__name__
         obj[module.__name__]=module.run(page_data,page_url)
     return obj
 
@@ -124,7 +126,7 @@ def main(args):
         page=urlparse.urljoin(args.site,args.page)
         page_data=open_url(page)
         run_page_modules(site,page,page_data,loaded_page_modules)
-    with open("output/"+urlparse.urlparse(url).netloc+".json","wb") as ofile:
+    with open("output/"+urlparse.urlparse(args.site).netloc+".json","wb") as ofile:
         json.dump(out,ofile)
 
 if __name__=='__main__':
