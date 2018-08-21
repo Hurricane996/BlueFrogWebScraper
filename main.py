@@ -34,7 +34,7 @@ site_modules=[
     mobile_friendly,
     page_speed,
     robots,
-    ssl 
+    ssl
 ]
 
 def open_url(url):
@@ -43,19 +43,20 @@ def open_url(url):
 
 
 def run_site_modules(domain,site_modules):
-    obj={}
+    obj=[]
     for module in site_modules:
         print module.__name__
-        obj[module.__name__] = module.run(domain)
+        obj.append({"name":module.__name__,"output" : module.run(domain)})
     return obj
 def run_page_modules(domain,page_url,page_data,page_modules):
-    obj={}
     if page_url[-1]=="/":
         page_url=page_url[:-1]
     page_name=page_url.split("/")[-1]
+    obj={"page_name":page_name,"modules":[]}
+    
     for module in page_modules:
         print module.__name__
-        obj[module.__name__]=module.run(page_data,page_url)
+        obj["modules"].append({"name":module.__name__,"output" : module.run(page_data,page_url)})
     return obj
 
 def load_modules(module_names,loadable_modules):
@@ -83,15 +84,6 @@ def get_pages(site,sitemap,regex,max_urls):
             urls.append(url.text)
     urls=urls[:max_urls]
     return urls
-def build_page_structure(site_name,urls,obj):
-    e=obj
-    urls = sorted(urls,key=lambda u:len(urlparse.urlparse(u).path.split("/")))
-    for page_url in urls:
-        page_path=urlparse.urlparse(url).path.split[path]
-        for path_component in path:
-            if not path_component in e.keys():
-                e[path_component] = {}
-            e=e[path_component]
 
 def main(args):
     print args.modules
@@ -112,16 +104,10 @@ def main(args):
   
     if not args.page:
         for page in pages:
-            e=out
-            page_path=urlparse.urlparse(page).path.split("/")
-            for path_component in page_path:
-                if not path_component in e.keys():
-                    e[path_component] = {}
-                e=e[path_component]
-
+            out["pages"] = []
             print "Working on page " + page
             page_data=open_url(page)
-            e["page_module_data"] = run_page_modules(args.site,page,page_data,loaded_page_modules)
+            out["pages"].append(run_page_modules(args.site,page,page_data,loaded_page_modules))
     else:
         page=urlparse.urljoin(args.site,args.page)
         page_data=open_url(page)

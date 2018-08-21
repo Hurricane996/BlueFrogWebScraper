@@ -8,10 +8,10 @@ def run(page_url):
     result=requests.post(request_url,data={"url":page_url})
     try:
         rson = result.json()
-        return rson["mobileFriendliness"]=="MOBILE_FRIENDLY"
+        return {"mobile_friendly":rson["mobileFriendliness"]=="MOBILE_FRIENDLY"}
     except ValueError:
         print [a for a in result.iter_lines()]
-        return "ERROR"
+        return {"err":True}
     except Exception:
-        return {"ERROR":result.json()}
+        return {"err":result.json()}
 name="mobile_friendly"
