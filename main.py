@@ -86,6 +86,7 @@ def get_pages(site,sitemap,regex,max_urls):
     return urls
 
 def main(args):
+    
     print args.modules
     out = {} 
     if args.modules[0]=="all":
@@ -111,7 +112,7 @@ def main(args):
     else:
         page=urlparse.urljoin(args.site,args.page)
         page_data=open_url(page)
-        run_page_modules(args.site,page,page_data,loaded_page_modules)
+        out["page"]=run_page_modules(args.site,page,page_data,loaded_page_modules)
     with open("output/"+urlparse.urlparse(args.site).netloc+".json","wb") as ofile:
         json.dump(out,ofile)
 
