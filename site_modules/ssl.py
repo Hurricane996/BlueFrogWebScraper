@@ -8,10 +8,6 @@ def run(page_url):
             page_url="https://"+page_url[7:]
         requests.head(page_url,timeout=3,verify=True)
         return {"ssl":True}
-    except requests.exceptions.Timeout:
-        return {"ssl":False}
-    except requests.exceptions.SSLError:
-        return {"ssl":False}
-    except requests.exceptions.ConnectionError as e:
+    except Exception:
         return {"ssl":False}
 name="ssl"
