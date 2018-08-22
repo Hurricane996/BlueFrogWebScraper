@@ -10,8 +10,8 @@ def run(page_url):
         return {"ssl":True}
     except requests.exceptions.Timeout:
         return {"ssl":False}
-    except requests.SSLError:
-        return {"ssl":Falsegy}
+    except requests.exceptions.SSLError:
+        return {"ssl":False}
     except requests.exceptions.ConnectionError as e:
         return {"ssl":False}
 name="ssl"
