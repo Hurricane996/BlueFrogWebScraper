@@ -37,6 +37,7 @@ class Parser(HTMLParser):
                     src=attr[1]
                 if attr[0]=="alt":
                     alt=attr[1]
+            """
             req=self.session.get(urlparse.urljoin(self.url,src),headers={"Connection":"close"})
             try:
                 length=int(req.headers["Content-Length"])
@@ -46,6 +47,7 @@ class Parser(HTMLParser):
                 self.images_without_alt.append({"src":src,"size":utils.sizeof_fmt(length)})
             else:
                 self.images.append({"src":src,"alt":alt,"size":utils.sizeof_fmt(length)})
+            """
 parser=Parser()
 def run(page_data,page_url):
     return parser.parse_page(page_data,page_url)
