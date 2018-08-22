@@ -7,15 +7,11 @@ def run(page_url):
         if page_url[:7]=="http://":
             page_url="https://"+page_url[7:]
         requests.head(page_url,timeout=3,verify=True)
-        return {"ssl":True,"ssl_root":True}
+        return {"ssl":True}
     except requests.exceptions.Timeout:
-        try:
-            page_url="https://www."+page_url[8:]
-            requests.head(page_url,timeout=3,verify=True)
-            return {"ssl":True,"ssl_root":False}
-        except requests.exceptions.ConnectionError:
-            return {"ssl":False,"ssl_root":False}
+        return {"ssl":False}
+    except requests.SSLError:
+        return {"ssl":Falsegy}
     except requests.exceptions.ConnectionError as e:
-        traceback.print_exc()
-        return {"ssl":False,"ssl_root":False}
+        return {"ssl":False}
 name="ssl"
