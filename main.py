@@ -101,7 +101,7 @@ def main(args):
         pages=get_pages(args.site,args.sitemap,args.exclude_regex,10)
 
     out["site_modules"] = run_site_modules(args.site,loaded_site_modules)
-  
+
     if not args.page:
         out["pages"]=[]
         for page in pages:
@@ -111,7 +111,7 @@ def main(args):
     else:
         page=urlparse.urljoin(args.site,args.page)
         page_data=open_url(page)
-        run_page_modules(site,page,page_data,loaded_page_modules)
+        run_page_modules(args.site,page,page_data,loaded_page_modules)
     with open("output/"+urlparse.urlparse(args.site).netloc+".json","wb") as ofile:
         json.dump(out,ofile)
 
