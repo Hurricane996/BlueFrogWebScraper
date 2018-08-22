@@ -103,8 +103,8 @@ def main(args):
     out["site_modules"] = run_site_modules(args.site,loaded_site_modules)
   
     if not args.page:
+        out["pages"]=[]
         for page in pages:
-            out["pages"] = []
             print "Working on page " + page
             page_data=open_url(page)
             out["pages"].append(run_page_modules(args.site,page,page_data,loaded_page_modules))
