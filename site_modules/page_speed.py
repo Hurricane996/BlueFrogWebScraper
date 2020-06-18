@@ -1,6 +1,12 @@
-import requests,json
+import json
+import requests
+import os
 
-API_KEY="AIzaSyDQv5wGmKstVbBBZr5lyZ8t9kItfHvWqos"
+
+API_KEY=os.environ.get("PAGE-SPEED-KEY")
+
+if not API_KEY
+    raise ValueError("API key not set. Please set the environment variable PAGE-SPEED-KEY to a Google Page Speed API key")
 
 # Stolen from stackoverfloe
 def sizeof_fmt(num, suffix='B'):
